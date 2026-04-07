@@ -35,7 +35,7 @@
     "lint": "eslint . --ext .ts,.js",
     "lint-check": "npm run type-check && npm run lint",
     "pretest:ui": "npm run lint-check",
-    "test:ui": "npx playwright test tests/ui",
+    "test:ui": "npx playwright test tests/layers/ui",
     "test:failed": "npx playwright test --last-failed",
     "ui": "npx playwright test --ui",
     "codegen": "npx playwright codegen",
