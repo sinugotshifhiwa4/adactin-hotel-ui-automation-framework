@@ -6,3 +6,14 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+/.auth/
+/logs/
+/dist/
+/downloads/
+
+# Environment configuration
+.env*
+!.env.example
+
+# Intentionally tracked
+# .vscode/ - keeping this tracked as it contains project-specific prettier setup
