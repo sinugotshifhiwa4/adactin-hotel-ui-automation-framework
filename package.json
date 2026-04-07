@@ -1,18 +1,72 @@
 {
   "dependencies": {
-    "playwright": "^1.59.1"
+    "@faker-js/faker": "^10.4.0",
+    "cross-env": "^10.1.0",
+    "dotenv": "^17.4.1",
+    "luxon": "^3.7.2",
+    "playwright": "^1.59.1",
+    "winston": "^3.19.0"
   },
   "name": "adactin-hotel-ui-automation",
   "version": "1.0.0",
-  "description": "",
+  "description": "Playwright + TypeScript E2E automation framework for Adactin Hotel application.",
   "main": "index.js",
   "devDependencies": {
     "@playwright/test": "^1.59.1",
-    "@types/node": "^25.5.2"
+    "@types/luxon": "^3.7.1",
+    "@types/node": "^25.5.2",
+    "cspell": "^9.8.0",
+    "eslint": "^9.39.4",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-playwright": "^2.10.1",
+    "eslint-plugin-prettier": "^5.5.5",
+    "eslint-plugin-unused-imports": "^4.4.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "prettier": "^3.8.1",
+    "typescript": "^6.0.2",
+    "typescript-eslint": "^8.58.0"
   },
-  "scripts": {},
-  "keywords": [],
-  "author": "",
+  "scripts": {
+    "prepare": "husky",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint . --ext .ts,.js",
+    "lint-check": "npm run type-check && npm run lint",
+    "pretest:ui": "npm run lint-check",
+    "test:ui": "npx playwright test tests/ui",
+    "test:failed": "npx playwright test --last-failed",
+    "ui": "npx playwright test --ui",
+    "codegen": "npx playwright codegen",
+    "debug": "npx playwright test --debug",
+    "report": "npx playwright show-report"
+  },
+  "lint-staged": {
+    "*.{ts,js}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.json": [
+      "prettier --write"
+    ],
+    "*.{md,yml,yaml}": [
+      "prettier --write"
+    ]
+  },
+  "keywords": [
+    "adactin",
+    "automation",
+    "playwright",
+    "typescript",
+    "e2e",
+    "ui",
+    "regression",
+    "sanity",
+    "logging",
+    "report"
+  ],
+  "author": "Tshifhiwa Sinugo",
   "license": "ISC",
-  "type": "commonjs"
+  "type": "module"
 }
