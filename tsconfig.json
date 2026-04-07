@@ -30,7 +30,6 @@
     "downloads",
     "playwright-report",
     "test-results",
-    "src/testData",
     ".github",
     ".gitlab",
     ".gitlab-ci",
