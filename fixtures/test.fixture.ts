@@ -8,6 +8,7 @@ import { TestContext } from "../src/layers/ui/context/testContext.js";
 import { LoginPage } from "../src/layers/ui/pages/loginPage.js";
 import { SearchHotelPage } from "../src/layers/ui/pages/searchHotelPage.js";
 import { LoginOrchestrator } from "../src/configuration/authentication/loginOrchestrator.js";
+import { TopNavigationBar } from "../src/layers/ui/pages/topNavigationBar.js";
 
 type TestFixtures = {
   testInfo: TestInfo;
@@ -18,6 +19,7 @@ type TestFixtures = {
   loginPage: LoginPage;
   searchHotelPage: SearchHotelPage;
   loginOrchestrator: LoginOrchestrator;
+  topNavigationBar: TopNavigationBar;
 };
 
 export const test = baseTest.extend<TestFixtures>({
@@ -65,11 +67,15 @@ export const test = baseTest.extend<TestFixtures>({
     await use(new SearchHotelPage(page));
   },
 
+  topNavigationBar: async ({ page }, use) => {
+    await use(new TopNavigationBar(page));
+  },
+
   loginOrchestrator: async (
-    { page, runtimeResolver, loginPage, searchHotelPage },
+    { page, runtimeResolver, loginPage, topNavigationBar },
     use,
   ) => {
-    await use(new LoginOrchestrator(page, runtimeResolver, loginPage, searchHotelPage));
+    await use(new LoginOrchestrator(page, runtimeResolver, loginPage, topNavigationBar));
   },
 });
 
