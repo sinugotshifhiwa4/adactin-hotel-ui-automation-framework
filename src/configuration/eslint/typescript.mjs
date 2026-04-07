@@ -3,6 +3,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const rootDir = path.resolve(__dirname, "../../..");
 
 export default [
   ...tseslint.configs.recommendedTypeChecked.map((config) => ({
@@ -15,7 +16,7 @@ export default [
       parser: tseslint.parser,
       parserOptions: {
         project: ["./tsconfig.json"],
-        tsconfigRootDir: __dirname,
+        tsconfigRootDir: rootDir,
       },
     },
     rules: {

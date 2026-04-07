@@ -22,7 +22,8 @@ export default [
         "ignorePackages",
         {
           ts: "never",
-          js: "never",
+          js: "always",
+          mjs: "always",
         },
       ],
     },
