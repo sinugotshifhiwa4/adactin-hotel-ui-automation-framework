@@ -3,19 +3,26 @@ import EnvironmentConfigManager from "../manager/environmentConfigManager.js";
 import EnvironmentVariables from "../variables/environmentVariables.js";
 import { ENV_KEYS } from "../variables/internal/environment.keys.js";
 import type { Credentials } from "../../authentication/types/credentials.types.js";
+import type { Build } from "./types/build.type.js";
 import ErrorHandler from "../../../utils/errorHandling/errorHandler.js";
 
 export class RuntimeEnvVariableResolver {
   /**
-   * Retrieves the portal base URL
+   * Gets the portal base URL.
+   * In CI environments, retrieves the URL from the environment variable `CI_BUILD_${build}_PORTAL_BASE_URL`.
+   * In local environments, resolves the URL by calling `getLocalPortalUrl` with the build number.
+   * @returns The portal base URL as a string.
+   * @throws Error if an error occurs while retrieving the portal base URL.
    */
   public getPortalBaseUrl(): string {
     try {
+      const build = this.getBuild();
+
       return this.isCI()
-        ? this.getRequiredEnv("CI_PORTAL_BASE_URL")
+        ? this.getRequiredEnv(`CI_BUILD_${build}_PORTAL_BASE_URL`)
         : this.resolveLocalVariable(
-            () => EnvironmentVariables.urls.PORTAL_BASE_URL,
-            "Portal Base URL",
+            () => this.getLocalPortalUrl(build),
+            `Build ${build} Portal Base URL`,
           );
     } catch (error) {
       ErrorHandler.captureError(
@@ -49,6 +56,43 @@ export class RuntimeEnvVariableResolver {
     username: ENV_KEYS.GENERAL.USERNAME,
     password: ENV_KEYS.GENERAL.PASSWORD,
   };
+
+  /**
+   * Retrieves the local portal URL based on the provided build number.
+   * @param build - Build number (1 or 2)
+   * @returns Local portal URL
+   * @throws Error if the provided build number is unsupported
+   */
+  private getLocalPortalUrl(build: string): string {
+    const map = {
+      "1": EnvironmentVariables.urls.BUILD.ONE,
+      "2": EnvironmentVariables.urls.BUILD.TWO,
+    };
+
+    const url = map[build as keyof typeof map];
+
+    if (!url) {
+      throw new Error(`Unsupported BUILD value: ${build}`);
+    }
+
+    return url;
+  }
+
+  /**
+   * Gets the build number from the environment variable.
+   * Throws an error if the BUILD variable is not set or is an invalid value.
+   * @returns The build number (1 or 2)
+   * @throws Error if the BUILD variable is not set or is an invalid value
+   */
+  public getBuild(): Build {
+    const build = process.env.BUILD as Build;
+
+    if (!build || !["1", "2"].includes(build)) {
+      throw new Error(`Invalid BUILD value: ${build}`);
+    }
+
+    return build;
+  }
 
   /**
    * Resolves portal credentials from CI environment variables.
