@@ -1,0 +1,65 @@
+#!/usr/bin/env sh
+set -e
+
+echo "Running pre-commit checks..."
+echo ""
+
+# Get staged TypeScript and JavaScript files (Added, Copied, Modified only)
+
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM -- '*.ts' '*.js')
+
+if [ -z "$STAGED_FILES" ]; then
+  echo "No staged JS/TS files to check."
+  echo ""
+  exit 0
+fi
+
+HAS_ERROR=0
+
+echo "Checking for focused tests (.only)..."
+
+for file in $STAGED_FILES; do
+  if git show ":$file" | grep -E -q '\.[[:space:]]*only[[:space:]]*\('; then
+    echo ""
+    echo "Focused test detected in staged file:"
+    echo "   $file"
+    echo ""
+    git show ":$file" | grep -E -n '\.[[:space:]]*only[[:space:]]*\('
+    echo ""
+    HAS_ERROR=1
+  fi
+done
+
+# Block console.log — enforce logger usage
+
+echo "Checking for console.log statements..."
+
+for file in $STAGED_FILES; do
+  if git show ":$file" | grep -q 'console\.log'; then
+    echo ""
+    echo "console.log detected in staged file:"
+    echo "   $file"
+    echo ""
+    git show ":$file" | grep -n 'console\.log'
+    echo ""
+    HAS_ERROR=1
+  fi
+done
+
+if [ "$HAS_ERROR" -eq 1 ]; then
+  echo "Use the winston logger instead of console.log."
+  echo ""
+  exit 1
+fi
+
+echo "No console.log statements found."
+echo ""
+
+# Run lint-staged (formatting + ESLint on staged files)
+
+echo "Running lint-staged..."
+npx lint-staged
+
+echo ""
+echo "All pre-commit checks passed! Proceeding with commit..."
+echo ""
