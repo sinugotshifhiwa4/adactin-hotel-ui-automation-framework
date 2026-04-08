@@ -1,11 +1,6 @@
-export interface LocationRowIdentifier {
-  location: string;
-}
-
-export interface HotelRowIdentifier {
-  hotel: string;
-}
-
+/**
+ * Defines the structure of the options that can be used to identify a row in the hotel search results.
+ */
 export interface HotelSearchRowIdentifier {
   location?: string;
   hotel?: string;

@@ -22,22 +22,48 @@ test.describe("Search Hotel Test Suite", { tag: "@regression" }, () => {
     logger.info(`Assertion Passed: Error is displayed when location is not selected`);
   });
 
-  test("should return results matching all selected search criteria", async ({
+  test(
+    "should return results matching all selected search criteria",
+    { tag: "@sanity" },
+    async ({ searchHotelPage, selectHotelPage }) => {
+      const dataBuilder = SearchHotelTestDataBuilder.build();
+
+      await searchHotelPage.verifySearchHotelTitileIsVisible();
+      await searchHotelPage.searchHotel(dataBuilder);
+
+      const numberOfDays = DateFormatter.calculateNumberOfDays(dataBuilder);
+
+      await selectHotelPage.verifyFilteredResultsMatch({
+        ...dataBuilder,
+        numberOfDays,
+      });
+
+      logger.info("Assertion Passed: Hotel search results match all selected criteria");
+    },
+  );
+
+  test("should throw error when check-in and check-out dates are in the past", async ({
     searchHotelPage,
-    selectHotelPage,
   }) => {
-    const dataBuilder = SearchHotelTestDataBuilder.build();
+    const location = SearchHotelTestDataBuilder.getRandomLocation();
+    const checkInDate = DateFormatter.formatDateByOffset(-3); // 3 days in the past
+    const checkOutDate = DateFormatter.formatDateByOffset(-1); // 1 day in the past
 
     await searchHotelPage.verifySearchHotelTitileIsVisible();
-    await searchHotelPage.searchHotel(dataBuilder);
-
-    const numberOfDays = DateFormatter.calculateNumberOfDays(dataBuilder);
-
-    await selectHotelPage.verifyFilteredResultsMatch({
-      ...dataBuilder,
-      numberOfDays,
+    await searchHotelPage.searchHotel({
+      location: location,
+      checkInDate: checkInDate,
+      checkOutDate: checkOutDate,
     });
 
-    logger.info("Assertion Passed: Hotel search results match all selected criteria");
+    await searchHotelPage.verifyCheckInDateCannotBeInPast({
+      location: location,
+      checkInDate: checkInDate,
+      checkOutDate: checkOutDate,
+    });
+
+    logger.info(
+      "Assertion Passed: Error is thrown when check-in and check-out dates are in the past",
+    );
   });
 });
