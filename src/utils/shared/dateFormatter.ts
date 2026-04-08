@@ -53,10 +53,13 @@ export default class DateFormatter {
     ].join("");
   }
 
-  public static generateId(prefix: string = "IT"): string {
-    return `${prefix}-${this.formatLocalTime()}`;
-  }
-
+  /**
+   * Calculates the number of days between check-in and check-out dates.
+   * Throws an error if either check-in or check-out date is undefined,
+   * or if the check-out date is not after the check-in date.
+   * @param options - Required search hotel options containing check-in and check-out dates.
+   * @returns The number of days between check-in and check-out dates.
+   */
   public static calculateNumberOfDays(options: SearchHotelFields): number {
     const { checkInDate, checkOutDate } = options;
 
@@ -84,5 +87,50 @@ export default class DateFormatter {
     }
 
     return diffDays;
+  }
+
+  /**
+   * Validates the check-in and check-out dates against the following rules:
+   * 1. Check-in cannot be before today.
+   * 2. Check-in must be before check-out.
+   * @param options - Contains the check-in and check-out dates to be validated.
+   */
+
+  public static validateCheckInAndOutDates(options: SearchHotelFields): void {
+    const { checkInDate, checkOutDate } = options;
+
+    if (!checkInDate || !checkOutDate) return;
+
+    const today = DateFormatter.parseDate(DateFormatter.formatDateByOffset(0));
+
+    const checkIn = DateFormatter.parseDate(checkInDate);
+    const checkOut = DateFormatter.parseDate(checkOutDate);
+
+    // Rule 1: Check-in cannot be before today
+    if (checkIn < today) {
+      ErrorHandler.logAndThrow(
+        "validateCheckInAndOutDates",
+        `Check-in date '${checkInDate}' cannot be before today's date.`,
+      );
+    }
+
+    // Rule 2: Check-in must be before check-out
+    if (checkIn >= checkOut) {
+      ErrorHandler.logAndThrow(
+        "validateCheckInAndOutDates",
+        `Check-in date '${checkInDate}' must be before check-out date '${checkOutDate}'.`,
+      );
+    }
+  }
+
+  /**
+   * Parses a string to a Date object in the format "dd/MM/yyyy".
+   * If the string is not in the correct format, or if the date is invalid, returns null.
+   * @param value - The string to parse.
+   * @returns {Date | null} The parsed date, or null if the string is invalid.
+   */
+  public static parseDate(date: string): Date {
+    const [day, month, year] = date.split("/").map(Number);
+    return new Date(year, month - 1, day);
   }
 }

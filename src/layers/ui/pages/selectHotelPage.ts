@@ -15,6 +15,13 @@ export class SelectHotelPage extends BasePage {
 
     const resultsTableBody = page.locator("table.login table tbody");
 
+    /**
+     * Returns a Locator that filters the rows in the results table based on the provided options.
+     * The Locator will return the rows that match all the provided options.
+     * If an option is not provided, it will not be used as a filter.
+     * @param options - The options to filter the rows by.
+     * @returns A Locator that filters the rows in the results table based on the provided options.
+     */
     this.getFilteredRows = (options: HotelSearchRowIdentifier) => {
       let rows = resultsTableBody.locator("tr");
 
@@ -72,6 +79,11 @@ export class SelectHotelPage extends BasePage {
     };
   }
 
+  /**
+   * Verifies that the Select Hotel title is visible on the Select Hotel page.
+   * This should be visible after navigating to the select hotel page.
+   * @returns A promise that resolves if the verification succeeds, or rejects with an error if it fails.
+   */
   public async verifySelectHotelTitleIsVisible(): Promise<void> {
     await this.elementAssertions.verifyElementState(
       this.selectHotelTitle,
@@ -81,6 +93,15 @@ export class SelectHotelPage extends BasePage {
     );
   }
 
+  /**
+   * Verifies that the filtered results match the provided options.
+   * It first waits for the select hotel title to be visible, then gets the filtered rows based on the provided options.
+   * It then asserts that the number of filtered rows matches the expected number, and
+   * logs an error if the assertion fails.
+   * Finally, it loops through each filtered row and extracts and asserts the values in the row match the provided options.
+   * @param options - The options to filter the rows by.
+   * @returns A promise that resolves if the verification succeeds, or rejects with an error if it fails.
+   */
   public async verifyFilteredResultsMatch(
     options: HotelSearchRowIdentifier,
   ): Promise<void> {
@@ -115,6 +136,12 @@ export class SelectHotelPage extends BasePage {
     }
   }
 
+  /**
+   * Asserts that one or more rows were found with the provided options.
+   * If no rows are found, an error is logged and thrown.
+   * @param rowCount - The number of rows found.
+   * @param options - The options used to filter the rows.
+   */
   private assertRowsFound(rowCount: number, options: HotelSearchRowIdentifier): void {
     if (rowCount === 0) {
       ErrorHandler.logAndThrow(
@@ -124,6 +151,16 @@ export class SelectHotelPage extends BasePage {
     }
   }
 
+  /**
+   * Extracts the values from a given row in a table, and asserts that the values match the provided options.
+   * The values are extracted by locating the input elements in the row with names that match the provided options,
+   * and then extracting the value attribute of the located input elements.
+   * The extracted values are then asserted to match the provided options.
+   * The function returns a Record containing the extracted values, with the keys being the column names and the values being the values in the row.
+   * @param row - The Locator of the row to extract the values from.
+   * @param options - The options to filter the rows by.
+   * @returns A Record containing the extracted values, with the keys being the column names and the values being the values in the row.
+   */
   private async extractAndAssertRowValues(
     row: Locator,
     options: HotelSearchRowIdentifier,
@@ -196,6 +233,14 @@ export class SelectHotelPage extends BasePage {
     return values;
   }
 
+  /**
+   * Logs the values of a given row in a table, in a human-readable format.
+   * The values are logged as a series of key-value pairs, with each pair
+   * separated by a newline character.
+   * @param rowNumber - The number of the row being logged.
+   * @param values - A Record containing the values of the row, with the keys
+   *   being the column names and the values being the values in the row.
+   */
   private logRowValues(rowNumber: number, values: Record<string, string>): void {
     const parts = Object.entries(values).map(([key, val]) => `  ${key}: '${val}'`);
     if (parts.length > 0) {
@@ -205,11 +250,21 @@ export class SelectHotelPage extends BasePage {
 
   // Helpers
 
+  /**
+   * Converts a given number of rooms into a string format
+   * @param numberOfRooms - The number of rooms to convert, in the format "X - Y"
+   * @returns A string representation of the number of rooms, in the format "X Rooms"
+   */
   private convertToRoomsFormat(numberOfRooms: string): string {
     const numericValue = numberOfRooms.split(" - ")[0].trim();
     return `${numericValue} Rooms`;
   }
 
+  /**
+   * Converts a given number of days into a string format
+   * @param numberOfDays - The number of days to convert
+   * @returns A string representation of the number of days
+   */
   private convertToDaysFormat(numberOfDays: number): string {
     return `${numberOfDays} Days`;
   }
