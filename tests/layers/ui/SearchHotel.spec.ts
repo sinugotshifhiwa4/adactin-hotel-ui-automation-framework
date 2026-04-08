@@ -66,4 +66,27 @@ test.describe("Search Hotel Test Suite", { tag: "@regression" }, () => {
       "Assertion Passed: Error is thrown when check-in and check-out dates are in the past",
     );
   });
+
+  test("should reset location, hotel and room type fields on reset", async ({
+    searchHotelPage,
+  }) => {
+    const location = SearchHotelTestDataBuilder.getRandomLocation();
+    const hotel = SearchHotelTestDataBuilder.getRandomHotel();
+    const roomType = SearchHotelTestDataBuilder.getRandomRoomType();
+
+    await searchHotelPage.verifySearchHotelTitileIsVisible();
+    await searchHotelPage.fillFieldsAndReset({
+      location: location,
+      hotel: hotel,
+      roomType: roomType,
+    });
+
+    await searchHotelPage.verifyFieldsAreReset({
+      location: location,
+      hotel: hotel,
+      roomType: roomType,
+    });
+
+    logger.info("Assertion Passed: Location, hotel and room type fields have been reset");
+  });
 });

@@ -1,4 +1,4 @@
-import { type Page, type Locator } from "@playwright/test";
+import { type Page, type Locator, expect } from "@playwright/test";
 import { BasePage } from "../base/basePage.js";
 import DateFormatter from "../../../utils/shared/dateFormatter.js";
 import type { SearchHotelFields } from "./types/searchHotel/searchHotel.type.js";
@@ -99,6 +99,48 @@ export class SearchHotelPage extends BasePage {
    */
   public async searchHotel(options: SearchHotelFields): Promise<void> {
     try {
+      await this.fillSearchHotelForm(options);
+      await this.clickSearchButton();
+    } catch (error) {
+      ErrorHandler.captureError(
+        error,
+        "searchHotel",
+        "An error occurred while searching for hotels with the provided options.",
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Fills the hotel search form with the provided options and then resets the form.
+   * The function will select the location, hotel, room type, number of rooms, check-in date, check-out date, adults per room, and children per room from the dropdown lists and inputs, and then click the reset button.
+   * @param options The search hotel options object containing the location, hotel, room type, number of rooms, check-in date, check-out date, adults per room, and children per room.
+   * @returns A promise that resolves if the form filling and resetting action succeeds, or rejects with an error if it fails.
+   * @throws An error if any of the fields are invalid.
+   */
+  public async fillFieldsAndReset(options: SearchHotelFields): Promise<void> {
+    try {
+      await this.fillSearchHotelForm(options);
+      await this.clickResetButton();
+    } catch (error) {
+      ErrorHandler.captureError(
+        error,
+        "fillFieldsAndReset",
+        "An error occurred while filling and resetting the hotel search form.",
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Fills the hotel search form with the provided options.
+   * The function will select the location, hotel, room type, number of rooms, check-in date, check-out date, adults per room, and children per room from the dropdown lists and inputs.
+   * @param options The search hotel options object containing the location, hotel, room type, number of rooms, check-in date, check-out date, adults per room, and children per room.
+   * @returns A promise that resolves if the form filling action succeeds, or rejects with an error if it fails.
+   * @throws An error if any of the fields are invalid.
+   */
+  private async fillSearchHotelForm(options: SearchHotelFields): Promise<void> {
+    try {
       await this.selectLocation(options);
       await this.selectHotel(options);
       await this.selectRoomType(options);
@@ -107,12 +149,11 @@ export class SearchHotelPage extends BasePage {
       await this.fillCheckOutDate(options);
       await this.selectAdultsPerRoom(options);
       await this.selectChildrenPerRoom(options);
-      await this.clickSearchButton();
     } catch (error) {
       ErrorHandler.captureError(
         error,
-        "searchHotel",
-        "An error occurred while searching for hotels with the provided options.",
+        "fillSearchHotelForm",
+        "An error occurred while filling the hotel search form.",
       );
       throw error;
     }
@@ -294,6 +335,86 @@ export class SearchHotelPage extends BasePage {
       return true;
     } catch {
       return false;
+    }
+  }
+
+  // Get Dropdown values
+
+  /**
+   * Verifies that the location, hotel and room type fields have been reset after clicking the Reset button.
+   * The function extracts the current values of the location, hotel and room type fields, and asserts that they are not equal to the values provided in the options object.
+   * If any of the assertions fail, an error is thrown.
+   * @param options - The search hotel options object containing the location, hotel and room type.
+   * @returns A promise that resolves if the verification succeeds, or rejects with an error if it fails.
+   */
+  public async verifyFieldsAreReset(options: SearchHotelFields): Promise<void> {
+    try {
+      const locationValue = await this.extractLocationDropdownValue();
+      const hotelValue = await this.extractHotelDropdownValue();
+      const roomTypeValue = await this.extractRoomTypeDropdownValue();
+      expect(locationValue).not.toBe(options.location);
+      expect(hotelValue).not.toBe(options.hotel);
+      expect(roomTypeValue).not.toBe(options.roomType);
+      logger.info(
+        `Fields have been reset - Location: ${locationValue}, Hotel: ${hotelValue}, Room Type: ${roomTypeValue}`,
+      );
+    } catch (error) {
+      ErrorHandler.captureError(
+        error,
+        "verifyFieldsAreReset",
+        "An error occurred while verifying fields have been reset.",
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Extracts the selected location value from the Location dropdown element.
+   * @returns A promise that resolves with the selected location value, or rejects with an error if it fails.
+   */
+  private async extractLocationDropdownValue() {
+    return this.extractDropdownValue(
+      this.locationDropdown,
+      "extractLocationDropdownValue",
+    );
+  }
+
+  /**
+   * Extracts the selected hotel value from the Hotels dropdown element.
+   * @returns A promise that resolves with the selected hotel value, or rejects with an error if it fails.
+   */
+  private async extractHotelDropdownValue() {
+    return this.extractDropdownValue(this.hotelsDropdown, "extractHotelDropdownValue");
+  }
+
+  /**
+   * Extracts the selected value from the Room Type dropdown element.
+   * @returns A promise that resolves with the selected value, or rejects with an error if it fails.
+   */
+  private async extractRoomTypeDropdownValue() {
+    return this.extractDropdownValue(
+      this.roomTypeDropdown,
+      "extractRoomTypeDropdownValue",
+    );
+  }
+
+  /**
+   * Extracts the selected value from a dropdown element.
+   * @param element - The Locator of the dropdown element.
+   * @param callerMethodName - The name of the method that called this function.
+   * @returns A promise that resolves with the selected value, or rejects with an error if it fails.
+   */
+  private async extractDropdownValue(element: Locator, callerMethodName: string) {
+    try {
+      const selectedValue = await element.inputValue();
+      return selectedValue.trim();
+    } catch (error) {
+      ErrorHandler.captureError(
+        error,
+        callerMethodName,
+        "An error occurred while extracting the dropdown value.",
+      );
+      throw error;
     }
   }
 }
