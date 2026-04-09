@@ -15,7 +15,7 @@ test.describe("Search Hotel Test Suite", { tag: "@regression" }, () => {
   test("Should show an error when searching for a hotel without selecting a location", async ({
     searchHotelPage,
   }) => {
-    await searchHotelPage.verifySearchHotelTitileIsVisible();
+    await searchHotelPage.verifySearchHotelTitleIsVisible();
     await searchHotelPage.clickSearchButton();
     await searchHotelPage.verifyNoLocationSelectedErrorMessage();
 
@@ -28,7 +28,7 @@ test.describe("Search Hotel Test Suite", { tag: "@regression" }, () => {
     async ({ searchHotelPage, selectHotelPage }) => {
       const dataBuilder = SearchHotelTestDataBuilder.build();
 
-      await searchHotelPage.verifySearchHotelTitileIsVisible();
+      await searchHotelPage.verifySearchHotelTitleIsVisible();
       await searchHotelPage.searchHotel(dataBuilder);
 
       const numberOfDays = DateFormatter.calculateNumberOfDays(dataBuilder);
@@ -49,7 +49,7 @@ test.describe("Search Hotel Test Suite", { tag: "@regression" }, () => {
     const checkInDate = DateFormatter.formatDateByOffset(-3); // 3 days in the past
     const checkOutDate = DateFormatter.formatDateByOffset(-1); // 1 day in the past
 
-    await searchHotelPage.verifySearchHotelTitileIsVisible();
+    await searchHotelPage.verifySearchHotelTitleIsVisible();
     await searchHotelPage.searchHotel({
       location: location,
       checkInDate: checkInDate,
@@ -74,7 +74,7 @@ test.describe("Search Hotel Test Suite", { tag: "@regression" }, () => {
     const hotel = SearchHotelTestDataBuilder.getRandomHotel();
     const roomType = SearchHotelTestDataBuilder.getRandomRoomType();
 
-    await searchHotelPage.verifySearchHotelTitileIsVisible();
+    await searchHotelPage.verifySearchHotelTitleIsVisible();
     await searchHotelPage.fillFieldsAndReset({
       location: location,
       hotel: hotel,

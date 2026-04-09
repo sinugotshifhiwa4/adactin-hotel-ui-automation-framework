@@ -48,10 +48,10 @@ export class SearchHotelPage extends BasePage {
    * This should be visible on the page after navigating to the search hotel page.
    * @returns A promise that resolves if the verification succeeds, or rejects with an error if it fails.
    */
-  public async verifySearchHotelTitileIsVisible(): Promise<void> {
+  public async verifySearchHotelTitleIsVisible(): Promise<void> {
     await this.elementAssertions.verifyElementState(
       this.searchHotelTitle,
-      "verifySearchHotelTitileIsVisible",
+      "verifySearchHotelTitleIsVisible",
       "visible",
       "Search Hotel Title",
     );

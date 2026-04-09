@@ -10,6 +10,7 @@ import { SearchHotelPage } from "../src/layers/ui/pages/searchHotelPage.js";
 import { LoginOrchestrator } from "../src/configuration/authentication/loginOrchestrator.js";
 import { TopNavigationBar } from "../src/layers/ui/pages/topNavigationBar.js";
 import { SelectHotelPage } from "../src/layers/ui/pages/selectHotelPage.js";
+import { BookHotelPage } from "../src/layers/ui/pages/bookHotel.js";
 
 type TestFixtures = {
   testInfo: TestInfo;
@@ -22,6 +23,7 @@ type TestFixtures = {
   loginOrchestrator: LoginOrchestrator;
   topNavigationBar: TopNavigationBar;
   selectHotelPage: SelectHotelPage;
+  bookHotelPage: BookHotelPage;
 };
 
 export const test = baseTest.extend<TestFixtures>({
@@ -82,6 +84,10 @@ export const test = baseTest.extend<TestFixtures>({
 
   selectHotelPage: async ({ page }, use) => {
     await use(new SelectHotelPage(page));
+  },
+
+  bookHotelPage: async ({ page }, use) => {
+    await use(new BookHotelPage(page));
   },
 });
 

@@ -7,6 +7,12 @@ import logger from "../../../configuration/logger/loggerManager.js";
 export class SelectHotelPage extends BasePage {
   private readonly selectHotelTitle: Locator;
   private readonly getFilteredRows: (options: HotelSearchRowIdentifier) => Locator;
+  private readonly getRowRadioButton: (options: HotelSearchRowIdentifier) => Locator;
+
+  private readonly continueButton: Locator;
+  private readonly cancelButton: Locator;
+
+  private readonly noHotelSelectedError: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -77,6 +83,12 @@ export class SelectHotelPage extends BasePage {
 
       return rows;
     };
+
+    this.getRowRadioButton = (options: HotelSearchRowIdentifier) =>
+      this.getFilteredRows(options).locator("input[type='radio'][id^='radiobutton_']");
+    this.continueButton = page.getByRole("button", { name: "Continue" });
+    this.cancelButton = page.getByRole("button", { name: "Cancel" });
+    this.noHotelSelectedError = page.locator("#radiobutton_span");
   }
 
   /**
@@ -267,5 +279,38 @@ export class SelectHotelPage extends BasePage {
    */
   private convertToDaysFormat(numberOfDays: number): string {
     return `${numberOfDays} Days`;
+  }
+
+  public async clickRowRadioButton(options: HotelSearchRowIdentifier): Promise<void> {
+    await this.element.clickElement(
+      this.getRowRadioButton(options),
+      "clickRowRadioButton",
+      `Clicked radio button | Location: ${options.location} | Hotel: ${options.hotel} | Room Type: ${options.roomType}`,
+    );
+  }
+
+  public async clickContinueButton(): Promise<void> {
+    await this.element.clickElement(
+      this.continueButton,
+      "clickContinueButton",
+      "Continue button",
+    );
+  }
+
+  public async clickCancelButton(): Promise<void> {
+    await this.element.clickElement(
+      this.cancelButton,
+      "clickCancelButton",
+      "Cancel button",
+    );
+  }
+
+  public async verifyNoHotelSelectedErrorIsVisible(): Promise<void> {
+    await this.elementAssertions.verifyElementState(
+      this.noHotelSelectedError,
+      "verifyNoHotelSelectedErrorIsVisible",
+      "visible",
+      "No Hotel Selected Error",
+    );
   }
 }
